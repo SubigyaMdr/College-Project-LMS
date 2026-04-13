@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Preview - Library System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background-color: #f4f6f9;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #5d0f72;
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .nav-links li {
+            padding: 15px 25px;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links li:hover,
+        .nav-links li.active {
+            background-color: #7b1fa2;
+            border-left: 4px solid #ffffff;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            width: 100%;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px 40px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            background-color: #5d0f72;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background-color: #4a148c;
+        }
+
+        .book-preview-container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            max-width: 900px;
+        }
+
+        .book-preview-content {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .book-image-section {
+            flex-shrink: 0;
+        }
+
+        .book-image {
+            width: 200px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .book-image-placeholder {
+            width: 200px;
+            height: 300px;
+            background: linear-gradient(135deg, #7b1fa2 0%, #5d0f72 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 80px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .book-details {
+            flex: 1;
+            text-align: left;
+        }
+
+        .book-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin: 0 0 15px 0;
+        }
+
+        .book-author {
+            font-size: 20px;
+            color: #666;
+            margin: 0 0 10px 0;
+        }
+
+        .book-genre {
+            display: inline-block;
+            background-color: #7b1fa2;
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .book-info-section {
+            margin-top: 30px;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .book-description {
+            margin-top: 30px;
+        }
+
+        .description-label {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .description-text {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .no-description {
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3>Library System</h3>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('dashboard') }}?section=books">Books</a></li>
+            <li class="active"><a href="{{ url_for('books') }}">Book Inventory</a></li>
+            <li><a href="#">Fines & Dues</a></li>
+            <li><a href="{{ url_for('logout') }}" style="color: #ff6b6b;">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <a href="{{ url_for('books') }}" class="back-btn">← Back to Book Inventory</a>
+
+        <div class="book-preview-container">
+            <div class="book-preview-content">
+                <div class="book-image-section">
+                    {% if book.image_url %}
+                    <img src="{{ book.image_url }}" alt="{{ book.title }}" class="book-image">
+                    {% else %}
+                    <div class="book-image-placeholder">📚</div>
+                    {% endif %}
+                </div>
+
+                <div class="book-details">
+                    <h1 class="book-title">{{ book.title }}</h1>
+                    <p class="book-author">by {{ book.author }}</p>
+                    {% if book.genre %}
+                    <span class="book-genre">{{ book.genre }}</span>
+                    {% endif %}
+
+                    <div class="book-info-section">
+                        <div class="info-label">Available Books</div>
+                        <div class="info-value">{{ book.quantity }} copies available</div>
+                    </div>
+
+                    <div class="book-description">
+                        <div class="description-label">Description</div>
+                        <div class="description-text">
+                            {% if book.description %}
+                            {{ book.description }}
+                            {% else %}
+                            <span class="no-description">No description available for this book.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

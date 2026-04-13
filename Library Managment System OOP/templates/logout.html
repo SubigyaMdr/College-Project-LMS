@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Logout</title>
+    <style>
+        .popup-overlay {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Black backdrop */
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background: white;
+            width: 300px;
+            margin: 15% auto;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+    </style>
+
+<script>
+        function confirmLogout(choice) {
+            if (choice === 'yes') {
+                window.location.href = "/logout-confirm";
+            } else {
+                window.location.href = "/";
+            }
+        }
+    </script>
+
+{% comment %} 
+    <script>
+        function togglePopup() {
+            const popup = document.getElementById('logoutPopup');
+            // If it's hidden or not set, show it; otherwise hide it
+            if (popup.style.display === 'block') {
+                popup.style.display = 'none';
+            } else {
+                popup.style.display = 'block';
+            }
+        } {% endcomment %}
+    
+        function confirmLogout(choice) {
+            if (choice === 'yes') {
+                // This now maps to line 279 in your app.py
+                window.location.href = "/logout"; 
+            } else {
+                togglePopup();
+            }
+        }
+    </script>
+</head>
+
+
+    <!-- Logout Button -->
+    <button onclick="togglePopup()">Logout</button>
+
+    <!-- Popup Modal -->
+    <div id="logoutPopup" class="popup-overlay">
+        <div class="popup-content">
+            <h3>Confirm Logout</h3>
+            <p>Are you sure you want to log out?</p>
+            <button onclick="logout()">Yes</button>
+            <button onclick="togglePopup()">Cancel</button>
+            <h3>Are you sure you want to logout?</h3>
+
+            <button onclick="confirmLogout('yes')">Yes</button>
+            <button onclick="confirmLogout('no')">No</button>
+        </div>
+    </div>
+</body> {% endcomment %}
+
+
+{% comment %} <body>
+    <button onclick="togglePopup()">Logout</button>
+
+    <div id="logoutPopup" class="popup-overlay">
+        <div class="popup-content">
+            <h3>Confirm Logout</h3>
+            <p>Are you sure you want to log out?</p>
+
+            <button onclick="confirmLogout('yes')">Yes</button>
+            <button onclick="confirmLogout('no')">No</button>
+        </div>
+    </div>
+</body>
+
+</html> {% endcomment %}

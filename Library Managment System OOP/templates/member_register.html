@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Registration - Library System</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #5d0f72; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        .container { background: white; padding: 2.5rem; border-radius: 8px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); width: 400px; max-height: 90vh; overflow-y: auto; }
+        h2 { text-align: center; color: #333; font-size: 28px; margin-bottom: 25px; font-weight: bold; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; color: #333; font-size: 14px; font-weight: 500; }
+        input[type="text"], input[type="email"], input[type="password"] { width: 100%; padding: 12px 40px 12px 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        .password-wrapper { position: relative; }
+        .password-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px; color: #666; padding: 0; }
+        .password-toggle:hover { color: #333; }
+        .submit-btn { width: 100%; padding: 14px; border: none; border-radius: 4px; background-color: #7b1fa2; color: white; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .submit-btn:hover { background-color: #5d0f72; }
+        .footer-text { text-align: center; margin-top: 20px; font-size: 14px; color: #333; }
+        .footer-text a { color: #7b1fa2; text-decoration: none; font-weight: bold; }
+        .footer-text a:hover { text-decoration: underline; }
+        .error-message { background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #f5c6cb; }
+        .success-message { background-color: #d4edda; color: #155724; padding: 12px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #c3e6cb; }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Member Registration</h2>
+        {% if error %}<div class="error-message">{{ error }}</div>{% endif %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for category, message in messages %}<div class="{{ 'success-message' if category == 'success' else 'error-message' }}">{{ message }}</div>{% endfor %}{% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('member_register') }}" method="POST" id="registerForm" onsubmit="return validateForm()">
+            <div class="input-group">
+                <label for="fullname">Full Name *</label>
+                <input type="text" id="fullname" name="fullname" required>
+            </div>
+            <div class="input-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="input-group">
+                <label for="username">Username *</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password *</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password" required minlength="6">
+                    <button type="button" class="password-toggle" onclick="togglePassword('password', this)">👁️</button>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="confirm-password">Confirm Password *</label>
+                <div class="password-wrapper">
+                    <input type="password" id="confirm-password" name="confirm-password" required minlength="6">
+                    <button type="button" class="password-toggle" onclick="togglePassword('confirm-password', this)">👁️</button>
+                </div>
+                <span id="password-match" style="display:none; color: #dc3545; font-size: 12px; margin-top: 5px;">Passwords do not match</span>
+            </div>
+            <button type="submit" class="submit-btn">Register</button>
+        </form>
+
+        <script>
+            function togglePassword(inputId, button) {
+                var input = document.getElementById(inputId);
+                if (input.type === 'password') { input.type = 'text'; button.textContent = '🙈'; }
+                else { input.type = 'password'; button.textContent = '👁️'; }
+            }
+            function validateForm() {
+                var password = document.getElementById('password').value;
+                var confirmPassword = document.getElementById('confirm-password').value;
+                var passwordMatch = document.getElementById('password-match');
+                if (password !== confirmPassword) { passwordMatch.style.display = 'block'; return false; }
+                passwordMatch.style.display = 'none';
+                if (password.length < 6) { alert('Password must be at least 6 characters long'); return false; }
+                return true;
+            }
+            document.getElementById('confirm-password').addEventListener('input', function() {
+                var password = document.getElementById('password').value;
+                var confirmPassword = this.value;
+                document.getElementById('password-match').style.display = (confirmPassword && password !== confirmPassword) ? 'block' : 'none';
+            });
+        </script>
+
+        <div class="footer-text">Already have an account? <a href="{{ url_for('member_login') }}">Login here</a></div>
+    </div>
+</body>
+
+</html>

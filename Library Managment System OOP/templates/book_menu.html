@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Books - Library System</title>
+    <style>
+        /* CSS shared with dashboard.html */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background-color: #f4f6f9;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #5d0f72;
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .nav-links li {
+            padding: 15px 25px;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links li:hover,
+        .nav-links li.active {
+            background-color: #7b1fa2;
+            border-left: 4px solid #ffffff;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .nav-link-icon {
+            margin-right: 12px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px 40px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        /* Table Styling matching your "Recent Activity" */
+        .content-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .table-scroll-wrapper {
+            max-height: 520px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .table-scroll-wrapper::-webkit-scrollbar { width: 8px; }
+        .table-scroll-wrapper::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .table-scroll-wrapper::-webkit-scrollbar-thumb { background: #7b1fa2; border-radius: 10px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            color: #555;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+            box-shadow: 0 1px 0 #eee;
+        }
+
+        /* + Button for Add Book */
+        .add-btn {
+            background-color: #5d0f72;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .action-link {
+            color: #5d0f72;
+            text-decoration: none;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        
+        .action-link.delete {
+            color: #dc3545;
+        }
+        
+        .action-link.delete:hover {
+            color: #c82333;
+        }
+        
+        .delete-form {
+            display: inline;
+        }
+        
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+            font-size: inherit;
+        }
+        
+        .delete-btn:hover {
+            color: #c82333;
+            text-decoration: underline;
+        }
+        
+        .action-link.preview {
+            color: #007bff;
+            background-color: #e7f3ff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin-right: 8px;
+            display: inline-block;
+            cursor: pointer;
+        }
+        
+        .action-link.preview:hover {
+            background-color: #cce7ff;
+        }
+
+        /* Sorting Styles */
+        th.sortable {
+            cursor: pointer;
+            transition: background 0.2s;
+            user-select: none;
+            position: relative;
+        }
+
+        th.sortable:hover {
+            background-color: #f0f0f0;
+        }
+
+        th.sortable::after {
+            content: '↕';
+            margin-left: 8px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        th.sort-asc::after {
+            content: '↑';
+            color: #5d0f72;
+        }
+
+        th.sort-desc::after {
+            content: '↓';
+            color: #5d0f72;
+        }
+
+        .manage-sort-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .sort-switch {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .sort-switch:hover {
+            border-color: #5d0f72;
+            color: #5d0f72;
+        }
+
+        .sort-switch.active {
+            background: #5d0f72;
+            color: white;
+            border-color: #5d0f72;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3>Library System</h3>
+        </div>
+        <ul class="nav-links">
+            <li>
+                <a href="{{ url_for('dashboard') }}"><span class="nav-link-icon">📊</span> Dashboard</a>
+            </li>
+            <li>
+                <a href="{{ url_for('dashboard') }}?section=books"><span class="nav-link-icon">📚</span> Books</a>
+            </li>
+            <li class="active">
+                <a href="{{ url_for('books') }}"><span class="nav-link-icon">📋</span> Book Inventory</a>
+            </li>
+            <li>
+                <a href="#"><span class="nav-link-icon">💰</span> Fines & Dues</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="welcome-msg">
+                <h2>Book Inventory</h2>
+                <p>Manage and view all library books.</p>
+            </div>
+            <a href="{{ url_for('add_book') }}" class="add-btn">+ Add New Book</a>
+        </div>
+
+        <!-- This the container For Add New Book Button in Black  
+            <div class="hero-section">
+            <h1>Books Management</h1>
+            <p>Manage your library books efficiently.</p>
+            <a href="{{ url_for('add_book') }}" class="hero-btn">Add New Book</a>
+        </div> -->
+
+        <div class="content-card">
+            <div class="manage-sort-container">
+                <span style="font-size: 14px; color: #666;">Quick Sort:</span>
+                <button class="sort-switch" onclick="sortTable(0, 'number')" id="sortIDBtn">ID</button>
+                <button class="sort-switch" onclick="sortTable(1, 'string')" id="sortTitleBtn">Title</button>
+            </div>
+            <div class="table-scroll-wrapper">
+                <table id="booksTable">
+                    <thead>
+                        <tr>
+                            <th class="sortable" onclick="sortTable(0, 'number')" id="th-id">ID</th>
+                            <th class="sortable" onclick="sortTable(1, 'string')" id="th-title">Title</th>
+                            <th>Genre</th>
+                            <th>Author</th>
+                            <th>Quantity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr>
+                            <td>{{ book.id }}</td>
+                            <td>{{ book.title }}</td>
+                            <td>{{ book.genre or 'N/A' }}</td>
+                            <td>{{ book.author }}</td>
+                            <td>{{ book.quantity }}</td>
+                            <td>
+                                <a href="{{ url_for('book_preview', id=book.id) }}" class="action-link preview">Preview</a>
+                                <a href="{{ url_for('edit_book', id=book.id) }}" class="action-link">Edit</a>
+                                <form method="POST" action="{{ url_for('delete_book', id=book.id) }}" class="delete-form" onsubmit="return confirm('Are you sure you want to delete this book?');">
+                                    <button type="submit" class="delete-btn">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if total_pages > 1 %}
+            <div class="pagination" style="margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                {% if page > 1 %}
+                <a href="{{ url_for('books', page=page-1) }}" style="padding: 8px 16px; background: #5d0f72; color: white; text-decoration: none; border-radius: 5px; font-weight: 600;">← Prev</a>
+                {% endif %}
+                <span style="color: #555; font-size: 14px;">Page {{ page }} of {{ total_pages }}</span>
+                {% if page < total_pages %}
+                <a href="{{ url_for('books', page=page+1) }}" style="padding: 8px 16px; background: #5d0f72; color: white; text-decoration: none; border-radius: 5px; font-weight: 600;">Next →</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        let currentSort = { column: null, direction: 'asc' };
+
+        function sortTable(n, type) {
+            const table = document.getElementById("booksTable");
+            const tbody = table.querySelector("tbody");
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+            const ths = table.querySelectorAll("th.sortable");
+            
+            // Determine direction
+            let direction = 'asc';
+            if (currentSort.column === n) {
+                direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            }
+            currentSort = { column: n, direction: direction };
+
+            // Update UI indicators
+            ths.forEach((th, index) => {
+                th.classList.remove('sort-asc', 'sort-desc');
+                if (index === n) {
+                    th.classList.add(direction === 'asc' ? 'sort-asc' : 'sort-desc');
+                }
+            });
+
+            // Update button UI
+            document.querySelectorAll('.sort-switch').forEach(btn => btn.classList.remove('active'));
+            if (n === 0) document.getElementById('sortIDBtn').classList.add('active');
+            if (n === 1) document.getElementById('sortTitleBtn').classList.add('active');
+
+            // Sort rows
+            const sortedRows = rows.sort((a, b) => {
+                let x = a.getElementsByTagName("td")[n].textContent.trim();
+                let y = b.getElementsByTagName("td")[n].textContent.trim();
+
+                if (type === 'number') {
+                    x = parseFloat(x);
+                    y = parseFloat(y);
+                } else {
+                    x = x.toLowerCase();
+                    y = y.toLowerCase();
+                }
+
+                if (direction === 'asc') {
+                    return x > y ? 1 : (x < y ? -1 : 0);
+                } else {
+                    return x < y ? 1 : (x > y ? -1 : 0);
+                }
+            });
+
+            // Re-append sorted rows
+            while (tbody.firstChild) {
+                tbody.removeChild(tbody.firstChild);
+            }
+            tbody.append(...sortedRows);
+        }
+    </script>
+</body>
+</html>
